@@ -146,6 +146,8 @@ button:hover {
 
 .card img {
   width: 100%;
+  aspect-ratio: 1 / 1;     /* reserva o espaço da foto enquanto ela carrega */
+  background: #3a4050;
   border-radius: 8px;
   margin-bottom: 12px;
 }

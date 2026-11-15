@@ -59,13 +59,17 @@ function buscarPersonagens(url, limpar, tentativa = 1) {
         return;
       }
 
-      // falha de conexão/CORS: tenta de novo até 3 vezes, esperando 1 segundo.
+      // falha de conexão: a API bloqueia por até 10 segundos quando recebe muitos
+      // pedidos seguidos (as fotos também contam). Espera 3 s, depois 6 s, depois 10 s.
       // O "&t=" muda a URL para não pegar uma resposta antiga do cache da API.
-      if (tentativa < 3) {
+      const esperas = [3, 6, 10];
+      if (tentativa <= esperas.length) {
+        const segundos = esperas[tentativa - 1];
+        mensagem.textContent = 'A API recebeu muitos pedidos seguidos. Tentando de novo em ' + segundos + ' s...';
         const novaUrl = url.split('&t=')[0] + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
         setTimeout(function () {
           buscarPersonagens(novaUrl, limpar, tentativa + 1);
-        }, 1000);
+        }, segundos * 1000);
         return;
       }
 
@@ -104,14 +108,20 @@ function criarCard(personagem) {
   const imagem = document.createElement('img');
   imagem.src = personagem.image;
   imagem.alt = personagem.name;
+  imagem.loading = 'lazy'; // só baixa a foto quando ela chega perto da tela
 
-  // se a foto não carregar: tenta de novo e, se falhar, mostra uma imagem padrão
+  // se a foto não carregar (bloqueio da API): espera de 10 a 15 s e tenta de novo.
+  // O tempo aleatório evita que todas as fotos peçam de novo ao mesmo tempo.
+  // Depois de 2 tentativas, mostra uma imagem padrão.
   let errosImagem = 0;
   imagem.addEventListener('error', function () {
     errosImagem++;
-    if (errosImagem === 1) {
-      imagem.src = personagem.image + '?t=' + Date.now();
-    } else if (errosImagem === 2) {
+    if (errosImagem <= 2) {
+      const espera = errosImagem * 10000 + Math.random() * 5000;
+      setTimeout(function () {
+        imagem.src = personagem.image + '?t=' + Date.now();
+      }, espera);
+    } else {
       imagem.src = 'sem-imagem.svg';
     }
   });
