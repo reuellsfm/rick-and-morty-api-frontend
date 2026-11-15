@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rick and Morty - Personagens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header class="topo">
+    <h1>Rick <span>and</span> Morty</h1>
+    <nav>
+      <a href="#sobre">Sobre</a>
+      <a href="#personagens">Personagens</a>
+    </nav>
+  </header>
+
+  <!-- Seção de conteúdo sobre o desenho -->
+  <section id="sobre" class="sobre">
+    <h2>Sobre o desenho</h2>
+    <p>
+      Rick and Morty é uma série animada criada por Justin Roiland e Dan Harmon,
+      lançada em 2013. Ela acompanha o cientista maluco Rick Sanchez e seu neto Morty
+      em aventuras por outras dimensões e planetas. Os dados abaixo vêm em tempo real
+      da <strong>Rick and Morty API</strong>.
+    </p>
+  </section>
+
+  <!-- Área dos cards: o HTML só tem o container vazio, o JavaScript preenche -->
+  <section id="personagens" class="personagens">
+    <h2>Personagens</h2>
+
+    <div class="filtros">
+      <input type="text" id="busca" placeholder="Buscar personagem pelo nome...">
+      <button id="btnBuscar">Buscar</button>
+    </div>
+
+    <p id="mensagem" class="mensagem">Carregando personagens...</p>
+
+    <div id="lista-cards" class="lista-cards"></div>
+
+    <button id="btnMais" class="btn-mais">Carregar mais</button>
+  </section>
+
+  <!-- Rodapé -->
+  <footer class="rodape">
+    <p>Projeto acadêmico - Web Development Front-End | Dados: rickandmortyapi.com</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

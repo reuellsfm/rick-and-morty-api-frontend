@@ -1,0 +1,224 @@
+/* ===== Cores do tema (verde do portal + fundo escuro) ===== */
+:root {
+  --verde: #97ce4c;
+  --azul: #00b0c8;
+  --fundo: #1b1f2a;
+  --card: #262b38;
+  --texto: #f1f1f1;
+  --vivo: #55cc44;
+  --morto: #d63d2e;
+  --desconhecido: #9e9e9e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+/* ===== Cabeçalho ===== */
+.topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px 5%;
+  background: #12151d;
+  border-bottom: 3px solid var(--verde);
+}
+
+.topo h1 {
+  font-family: 'Bangers', cursive;
+  font-size: 2.5rem;
+  color: var(--verde);
+  letter-spacing: 2px;
+}
+
+.topo h1 span {
+  color: var(--azul);
+}
+
+.topo nav a {
+  color: var(--texto);
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: 600;
+}
+
+.topo nav a:hover {
+  color: var(--verde);
+}
+
+/* ===== Seções ===== */
+.sobre,
+.personagens {
+  padding: 40px 5%;
+}
+
+.sobre {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 1.7;
+}
+
+h2 {
+  font-family: 'Bangers', cursive;
+  font-size: 2rem;
+  color: var(--azul);
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* ===== Busca ===== */
+.filtros {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.filtros input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 2px solid var(--verde);
+  background: var(--card);
+  color: var(--texto);
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--verde);
+  color: #12151d;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--azul);
+}
+
+.mensagem {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ===== Grid de cards (responsivo) ===== */
+.lista-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 25px;
+}
+
+/* ===== Card (segue o layout pedido: nome, coração, imagem, texto) ===== */
+.card {
+  position: relative;
+  background: var(--card);
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 15px var(--verde);
+}
+
+.card h3 {
+  font-size: 1rem;
+  margin: 0 30px 12px;
+  min-height: 2.6em;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.card p {
+  font-size: 0.85rem;
+  margin: 4px 0;
+  text-align: left;
+}
+
+/* Coração de favorito */
+.favorito {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  padding: 0;
+  font-size: 1.5rem;
+  color: #ff6b6b;
+}
+
+.favorito:hover {
+  background: none;
+  transform: scale(1.2);
+}
+
+/* Bolinha de status */
+.status::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background: var(--desconhecido);
+}
+
+.status.alive::before { background: var(--vivo); }
+.status.dead::before  { background: var(--morto); }
+
+/* ===== Botão carregar mais ===== */
+.btn-mais {
+  display: block;
+  margin: 30px auto 0;
+}
+
+.btn-mais:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* ===== Rodapé ===== */
+.rodape {
+  text-align: center;
+  padding: 20px;
+  background: #12151d;
+  border-top: 3px solid var(--verde);
+  font-size: 0.85rem;
+}
+
+/* ===== Celular ===== */
+@media (max-width: 600px) {
+  .topo {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .topo nav a {
+    margin: 0 10px;
+  }
+
+  .filtros {
+    flex-direction: column;
+    align-items: center;
+  }
+}
