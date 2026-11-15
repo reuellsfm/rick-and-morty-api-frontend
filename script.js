@@ -21,6 +21,7 @@ const traducaoGenero = { Male: 'Masculino', Female: 'Feminino', Genderless: 'Sem
 function buscarPersonagens(url, limpar, tentativa = 1) {
   mensagem.textContent = 'Carregando personagens...';
   btnMais.disabled = true; // evita vários cliques enquanto carrega
+  cota--; // a chamada da API também conta no limite de pedidos (ver item 3)
 
   fetch(url)
     .then(function (resposta) {
@@ -104,23 +105,24 @@ function criarCard(personagem) {
   const nome = document.createElement('h3');
   nome.textContent = personagem.name;
 
-  // Imagem
+  // Imagem (o endereço da foto é colocado pela fila de fotos, no fim do arquivo)
   const imagem = document.createElement('img');
-  imagem.src = personagem.image;
   imagem.alt = personagem.name;
-  imagem.loading = 'lazy'; // só baixa a foto quando ela chega perto da tela
 
-  // se a foto não carregar (bloqueio da API): espera de 10 a 15 s e tenta de novo.
-  // O tempo aleatório evita que todas as fotos peçam de novo ao mesmo tempo.
-  // Depois de 2 tentativas, mostra uma imagem padrão.
+  // quando a foto carrega, guarda o endereço para não gastar cota de novo
+  imagem.addEventListener('load', function () {
+    fotosCarregadas.add(personagem.image);
+  });
+
+  // se a foto não carregar: volta para a fila e tenta de novo (até 3 vezes);
+  // depois disso, mostra uma imagem padrão
   let errosImagem = 0;
   imagem.addEventListener('error', function () {
+    if (imagem.src.includes('sem-imagem.svg')) return;
     errosImagem++;
-    if (errosImagem <= 2) {
-      const espera = errosImagem * 10000 + Math.random() * 5000;
-      setTimeout(function () {
-        imagem.src = personagem.image + '?t=' + Date.now();
-      }, espera);
+    cota = Math.min(cota, -3); // a API bloqueou: a fila dá uma pausa
+    if (errosImagem <= 3) {
+      pedirFoto(imagem, personagem.image + '?t=' + Date.now());
     } else {
       imagem.src = 'sem-imagem.svg';
     }
@@ -152,9 +154,50 @@ function criarCard(personagem) {
 
   // Coloca o card dentro da lista na página
   listaCards.appendChild(card);
+
+  // Pede a foto pela fila
+  pedirFoto(imagem, personagem.image);
 }
 
-// 3) EVENTOS DOS BOTÕES
+// 3) FILA DE FOTOS
+// A API bloqueia por alguns segundos quem faz muitos pedidos seguidos
+// (cerca de 20 a cada 10 s, e cada foto conta como um pedido).
+// Por isso as fotos não são pedidas todas de uma vez: entram numa fila
+// e saem no ritmo que a API aceita, usando uma "cota" de pedidos.
+const COTA_MAXIMA = 10;   // quantas fotos podem ser pedidas de uma vez
+const RECARGA_MS = 600;   // a cada 0,6 s a cota ganha mais 1 pedido
+let cota = COTA_MAXIMA;
+const filaFotos = [];
+const fotosCarregadas = new Set(); // fotos que o navegador já tem guardadas
+
+function pedirFoto(imagem, url) {
+  // foto já carregada antes: o navegador tem no cache, não gasta cota
+  if (fotosCarregadas.has(url)) {
+    imagem.src = url;
+    return;
+  }
+  filaFotos.push({ imagem: imagem, url: url });
+  processarFila();
+}
+
+function processarFila() {
+  while (cota > 0 && filaFotos.length > 0) {
+    const item = filaFotos.shift();
+    if (!item.imagem.isConnected) continue; // card apagado por uma nova busca
+    cota--;
+    item.imagem.src = item.url;
+  }
+}
+
+// recarrega a cota aos poucos e continua a fila
+setInterval(function () {
+  if (cota < COTA_MAXIMA) {
+    cota++;
+  }
+  processarFila();
+}, RECARGA_MS);
+
+// 4) EVENTOS DOS BOTÕES
 btnMais.addEventListener('click', function () {
   if (proximaPagina) {
     buscarPersonagens(proximaPagina, false);
